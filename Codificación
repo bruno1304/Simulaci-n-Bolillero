@@ -1,0 +1,144 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BolilleroBiblioteca
+
+{
+    public class Bolillero
+    {
+
+        public List<int> bolillasLista { get; set; }
+
+        public List<int> bolillasSacadas { get; set; }
+
+        public int lengJugada { get; set; }
+
+        public int cantBolillas { get; set; }
+
+        Random numRand = new Random();
+
+        public Bolillero()
+        {
+            bolillasLista = new List<int>();
+            bolillasSacadas = new List<int>();
+        }
+
+        public void llenarBolillero()
+        {
+            for (int i = 0; i  < cantBolillas; i ++)
+            {
+                bolillasLista.Add(i);
+            }
+        }
+
+        public void regresarBolillasSacadas()
+        {
+            bolillasLista.AddRange(bolillasSacadas);
+            bolillasSacadas.Clear();
+        }
+
+        public bool verificarJugada(List<int> jugada, List<int> jugada2) 
+            => jugada.SequenceEqual(jugada2);
+       
+        public List<int> sacarJugada()
+        {
+            List<int> Jugada = new List<int>();
+            for (int i = 0; i < lengJugada; i++)
+            {
+                Jugada.Add(sacarBolilla());
+            }
+            return Jugada;
+        }
+        public int sacarBolilla()
+        {
+            int bolilla = bolillasLista[numRand.Next(bolillasLista.Count)];
+            bolillasSacadas.Add(bolilla);
+            bolillasLista.Remove(bolilla);
+            return bolilla;
+        }
+
+        public int jugarNVeces(List<int> jugada, int cantVeces)
+        {
+            int vecesJugada = 0;
+            List<int> cadenaNum = new List<int>();
+            for (int i = 0; i < cantVeces; i++)
+            {
+                cadenaNum = sacarJugada();
+                if (verificarJugada(jugada, cadenaNum))
+                {
+                    vecesJugada++;
+                }
+                regresarBolillasSacadas();
+            }
+            return vecesJugada;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using BolilleroBiblioteca;
+using System.Collections.Generic;
+
+namespace BolilleroConsola
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Bolillero bolillero = new Bolillero();
+
+            Console.Write("Ingrese la cantidad de bolillas que tiene el bolillero:");
+            bolillero.cantBolillas = Convert.ToInt32(Console.ReadLine());
+
+            bolillero.llenarBolillero();
+
+            Console.Write("Ingrese la cantidad de bolillas en una Jugada");
+            bolillero.lengJugada = Convert.ToInt32(Console.ReadLine());
+
+            List<int> jugada = bolillero.sacarJugada();
+
+            Console.WriteLine("Jugada:");
+
+            for (int i = 0; i < 7; i++)
+            {
+                Console.WriteLine(jugada[i]);
+            }
+
+            bolillero.regresarBolillasSacadas();
+
+            Console.WriteLine("Bolilla:");
+
+            Console.WriteLine(bolillero.sacarBolilla());
+
+            bolillero.regresarBolillasSacadas();
+
+            Console.Write("Ingrese la cantidad de veces a jugar:");
+            int vecesAJugar = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Cantidad de veces que la jugada salió: {0}", bolillero.jugarNVeces(jugada, vecesAJugar));
+
+            bolillero.regresarBolillasSacadas();
+
+            for (int i = 0; i < bolillero.bolillasLista.Count; i++)
+            {
+                Console.WriteLine(bolillero.bolillasLista[i]);
+            }
+
+        }
+    }
+}
